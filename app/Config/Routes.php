@@ -37,6 +37,9 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
 $routes->get('/(:segment)/(:num)', 'Home::test/$1/$2');
+$routes->get('/userci/getAllUsers', 'UserCi::getAllUsers');
+$routes->get('/userci/getUserByEmail', 'UserCi::getUserByEmail');
+$routes->get('/userci/passwordVerify', 'UserCi::passwordVerify');
 
 /*
  * --------------------------------------------------------------------
