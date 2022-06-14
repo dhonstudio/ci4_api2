@@ -8,4 +8,9 @@ class Home extends BaseController
     {
         return view('welcome_message');
     }
+
+    public function test($var, $var2)
+    {
+        echo $var . $var2;
+    }
 }
