@@ -7,69 +7,159 @@ use CodeIgniter\HTTP\Response;
 
 class DhonResponse
 {
+    /**
+     * Connect to api_users model.
+     */
     protected $apiusersModel;
+
+    /**
+     * Get a request.
+     */
     protected $request;
+
+    /**
+     * Send a response.
+     */
     protected $response;
-    protected $message;
+
+    /**
+     * Set authorization.
+     * 
+     * @var boolean
+     */
+    protected $basic_auth = true;
+
+    /**
+     * Initialize api_users.
+     * 
+     * @var mixed[]
+     */
+    protected $api_user = [
+        'level' => 4
+    ];
+
+    /**
+     * Return total result from response.
+     * 
+     * @var int
+     */
     protected $total;
+
+    /**
+     * Return result from response.
+     * 
+     * @var mixed
+     */
     protected $data;
 
+    /**
+     * Set add-on message reponse.
+     * 
+     * @var string
+     */
+    protected $message;
+
+    /**
+     * Initialize model.
+     */
     public $model;
+
+    /**
+     * Set request method.
+     * 
+     * @var string
+     */
     public $method;
+
+    /**
+     * Set column name to search where.
+     * 
+     * @var string
+     */
     public $column;
+
+    /**
+     * Set username to verify password.
+     * 
+     * @var string
+     */
+    public $username;
+
+    /**
+     * Set password to verify password.
+     * 
+     * @var string
+     */
     public $password;
 
     public function __construct()
     {
-        $this->apiusersModel    = new ApiusersModel();
+        $this->apiusersModel = new ApiusersModel();
 
         $this->request  = service('request');
         $this->response = service('response');
         $this->response->setHeader('Content-type', 'application/json');
+
+        // Set if need custom restrictions.
         $this->response->setHeader('Access-Control-Allow-Origin', '*');
+
         $this->response->setStatusCode(Response::HTTP_OK);
     }
 
+    /**
+     * Collect data from db.
+     *
+     * @return void
+     */
     public function collect()
     {
-        if (isset($_SERVER['PHP_AUTH_USER'])) {
-            $api_user = $this->apiusersModel->where('username', $_SERVER['PHP_AUTH_USER'])->first();
-            if ($api_user) {
-                $match = password_verify($_SERVER['PHP_AUTH_PW'], $api_user['password']);
-                if ($match) {
-                    if ($api_user['level'] > 0) {
-                        if ($this->method == 'GET') {
-                            $value      = $this->request->getGet($this->column);
-                            $result     = $this->model->where($this->column, $value)->first();
+        $this->basic_auth ? $this->_basic_auth() : false;
 
-                            $this->data = $result;
-                        } else if ($this->method == 'PASSWORD_VERIFY') {
-                            $value      = $this->request->getGet($this->column);
-                            $password   = $this->request->getGet($this->password);
+        if ($this->api_user['level'] > 0) {
+            if ($this->method == 'GET') {
+                $value      = $this->request->getGet($this->column);
+                $result     = $this->model->where($this->column, $value)->first();
 
-                            $user       = $this->model->where($this->column, $value)->first();
-                            $this->data = password_verify($password, $user[$this->password]) ? true : [false];
-                        } else {
-                            $result         = $this->model->findAll();
+                $this->data = $result;
+            } else if ($this->method == 'PASSWORD_VERIFY') {
+                $username   = $this->request->getGet($this->username);
+                $password   = $this->request->getGet($this->password);
 
-                            $this->total    = count($result);
-                            $this->data     = $result;
-                        }
-                    } else {
-                        $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
-                        $this->message = 'Authorization issue';
-                    }
-                } else {
-                    $this->response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                }
+                $user       = $this->model->where($this->username, $username)->first();
+                $this->data = password_verify($password, $user[$this->password]) ? true : [false];
             } else {
-                $this->response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                $result         = $this->model->findAll();
+
+                $this->total    = count($result);
+                $this->data     = $result;
             }
         } else {
-            $this->response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+            $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+            $this->message = 'Authorization issue';
         }
 
         $this->_send();
+    }
+
+    private function _basic_auth()
+    {
+        if (isset($_SERVER['PHP_AUTH_USER'])) {
+            $this->api_user = $this->apiusersModel->where('username', $_SERVER['PHP_AUTH_USER'])->first();
+            if ($this->api_user) {
+                $match = password_verify($_SERVER['PHP_AUTH_PW'], $this->api_user['password']);
+                if ($match) {
+                } else {
+                    $this->response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                    $this->_send();
+                }
+            } else {
+                $this->response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                $this->_send();
+            }
+        } else {
+            $this->response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+            $this->_send();
+        }
     }
 
     private function _send()
@@ -83,5 +173,6 @@ class DhonResponse
         $this->response->setBody(json_encode($result, JSON_NUMERIC_CHECK));
 
         $this->response->send();
+        exit;
     }
 }

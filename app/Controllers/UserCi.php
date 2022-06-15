@@ -30,7 +30,7 @@ class UserCi extends BaseController
     public function passwordVerify()
     {
         $this->dhonresponse->method     = 'PASSWORD_VERIFY';
-        $this->dhonresponse->column     = 'email';
+        $this->dhonresponse->username   = 'email';
         $this->dhonresponse->password   = 'password_hash';
         $this->dhonresponse->collect();
     }

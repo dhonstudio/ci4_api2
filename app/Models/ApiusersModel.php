@@ -7,5 +7,4 @@ use CodeIgniter\Model;
 class ApiusersModel extends Model
 {
     protected $table = 'api_users';
-    protected $useTimestamps = true;
 }
