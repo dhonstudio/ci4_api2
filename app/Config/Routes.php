@@ -41,6 +41,18 @@ $routes->get('/userci/getAllUsers', 'UserCi::getAllUsers');
 $routes->get('/userci/getUserByEmail', 'UserCi::getUserByEmail');
 $routes->get('/userci/passwordVerify', 'UserCi::passwordVerify');
 
+$routes->get('/gethit/getAddressByIP', 'GetHit::getAddressByIP');
+$routes->post('/gethit/postAddress', 'GetHit::postAddress');
+$routes->get('/gethit/getAllEntities', 'GetHit::getAllEntities');
+$routes->post('/gethit/postEntity', 'GetHit::postEntity');
+$routes->get('/gethit/getSessionByCookie', 'GetHit::getSessionByCookie');
+$routes->post('/gethit/postSession', 'GetHit::postSession');
+$routes->get('/gethit/getSourceByReferer', 'GetHit::getSourceByReferer');
+$routes->post('/gethit/postSource', 'GetHit::postSource');
+$routes->get('/gethit/getPageByUri', 'GetHit::getPageByUri');
+$routes->post('/gethit/postPage', 'GetHit::postPage');
+$routes->post('/gethit', 'GetHit::index');
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
