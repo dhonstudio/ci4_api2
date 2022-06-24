@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class ApiaddressModel extends Model
 {
+    protected $DBGroup = 'project';
     protected $table = 'api_address';
     protected $allowedFields = ['ip_address', 'ip_info'];
 }

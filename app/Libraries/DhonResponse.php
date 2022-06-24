@@ -172,9 +172,15 @@ class DhonResponse
             if ($this->api_user['level'] > 0) {
                 if ($this->method == 'GET') {
                     $value      = $this->request->getGet($this->column);
-                    $result     = $this->model->where($this->column, $value)->first();
 
-                    $this->data = $result == [] ? ["Array()"] : $result;
+                    if ($value) {
+                        $result     = $this->model->where($this->column, $value)->first();
+
+                        $this->data = $result == [] ? ["Array()"] : $result;
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                        $this->message = 'Require some variable to get';
+                    }
                 } else if ($this->method == 'POST') {
                     $data = [];
                     foreach ($this->model->allowedFields as $field) {
@@ -184,7 +190,12 @@ class DhonResponse
                     $insert_id  = $this->model->insert($data);
                     $result     = $this->model->where($this->id, $insert_id)->first();
 
-                    $this->data = $result;
+                    if ($result) {
+                        $this->data = $result;
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                        $this->message = 'Require some filed to post';
+                    }
                 } else if ($this->method == 'PASSWORD_VERIFY') {
                     $username   = $this->request->getGet($this->username);
                     $password   = $this->request->getGet($this->password);
@@ -308,7 +319,7 @@ class DhonResponse
         ]) : $entity_av['id'];
 
         // api_session
-        $session_name   = 'DShC13v';
+        $session_name   = 'DShC13c';
         $session_prefix = '__m-';
         $session_secure = false;
 

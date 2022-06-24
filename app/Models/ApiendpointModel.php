@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class ApiendpointModel extends Model
 {
+    protected $DBGroup = 'project';
     protected $table = 'api_endpoint';
     protected $allowedFields = ['endpoint'];
 }

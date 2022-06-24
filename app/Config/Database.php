@@ -87,5 +87,13 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
+
+        $this->default['username'] = 'root';
+        $this->project = $this->default;
+
+        $this->project['database'] = 'u493229753_project_dev';
+
+        ENVIRONMENT === 'testing' ? require 'DatabaseDev.php'
+            : (ENVIRONMENT === 'production' ? require 'DatabaseProd.php' : false);
     }
 }

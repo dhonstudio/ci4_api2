@@ -6,6 +6,10 @@ use CodeIgniter\Model;
 
 class SessionModel extends Model
 {
+    protected $DBGroup = 'project';
     protected $table = 'dhonstudio_session';
     protected $allowedFields = ['session'];
+    protected $validationRules = [
+        'session' => 'required',
+    ];
 }
