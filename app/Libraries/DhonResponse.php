@@ -141,13 +141,6 @@ class DhonResponse
 
     public function __construct()
     {
-        $this->apiusersModel    = new ApiusersModel();
-        $this->apiaddressModel  = new ApiaddressModel();
-        $this->apientityModel   = new ApientityModel();
-        $this->apisessionModel  = new ApisessionModel();
-        $this->apiendpointModel = new ApiendpointModel();
-        $this->apilogModel      = new ApilogModel();
-
         $this->request  = service('request');
         $this->response = service('response');
         $this->response->setHeader('Content-type', 'application/json');
@@ -279,6 +272,13 @@ class DhonResponse
      */
     private function _hit()
     {
+        $this->apiusersModel    = new ApiusersModel();
+        $this->apiaddressModel  = new ApiaddressModel();
+        $this->apientityModel   = new ApientityModel();
+        $this->apisessionModel  = new ApisessionModel();
+        $this->apiendpointModel = new ApiendpointModel();
+        $this->apilogModel      = new ApilogModel();
+
         // api_address
         $ip_address =
             !empty($_SERVER["HTTP_X_CLUSTER_CLIENT_IP"]) ? $_SERVER["HTTP_X_CLUSTER_CLIENT_IP"]
@@ -319,7 +319,7 @@ class DhonResponse
         ]) : $entity_av['id'];
 
         // api_session
-        $session_name   = 'DShC13c';
+        $session_name   = 'DShC13v';
         $session_prefix = '__m-';
         $session_secure = false;
 

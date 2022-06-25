@@ -7,7 +7,7 @@ use App\Models\UserciModel;
 
 class UserCi extends BaseController
 {
-    protected $collect;
+    protected $dhonresponse;
 
     public function __construct()
     {
