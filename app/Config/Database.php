@@ -77,6 +77,8 @@ class Database extends Config
         'foreignKeys' => true,
     ];
 
+    public $project;
+
     public function __construct()
     {
         parent::__construct();

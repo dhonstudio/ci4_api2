@@ -11,7 +11,7 @@ class DhonRequest
 
     public function __construct()
     {
-        $this->client       = \Config\Services::curlrequest();
+        $this->client   = \Config\Services::curlrequest();
     }
 
     /**
@@ -19,7 +19,7 @@ class DhonRequest
      * 
      * @param string $url
      * 
-     * @return void
+     * @return mixed
      */
     public function curl(string $url)
     {
