@@ -17,6 +17,49 @@ use DateTime;
 class DhonResponse
 {
     /**
+     * Set authorization.
+     * 
+     * @var boolean
+     */
+    protected $basic_auth = false;
+
+    /**
+     * Initialize api_users.
+     * 
+     * @var int[]
+     */
+    protected $api_user = [
+        'id_user' => 1,
+        'level' => 4
+    ];
+
+    /**
+     * Send a response.
+     */
+    protected $response;
+
+    /**
+     * Set add-on message reponse.
+     * 
+     * @var string
+     */
+    protected $message;
+
+    /**
+     * Return total result from response.
+     * 
+     * @var int
+     */
+    protected $total;
+
+    /**
+     * Return result from response.
+     * 
+     * @var mixed
+     */
+    protected $data;
+
+    /**
      * Connect to api_users model.
      */
     protected $apiusersModel;
@@ -47,62 +90,14 @@ class DhonResponse
     protected $apilogModel;
 
     /**
+     * Load DhonRequest library.
+     */
+    protected $dhonrequest;
+
+    /**
      * Get a request.
      */
     protected $request;
-
-    /**
-     * Send a response.
-     */
-    protected $response;
-
-    /**
-     * Set authorization.
-     * 
-     * @var boolean
-     */
-    protected $basic_auth = false;
-
-    /**
-     * Initialize api_users.
-     * 
-     * @var mixed[]
-     */
-    protected $api_user = [
-        'id_user' => 1,
-        'level' => 4
-    ];
-
-    /**
-     * Return total result from response.
-     * 
-     * @var int
-     */
-    protected $total;
-
-    /**
-     * Return result from response.
-     * 
-     * @var mixed
-     */
-    protected $data;
-
-    /**
-     * Set add-on message reponse.
-     * 
-     * @var string
-     */
-    protected $message;
-
-    /**
-     * CURL request.
-     */
-    protected $client;
-
-    /**
-     * Initialize model.
-     */
-    public $model;
 
     /**
      * Set request method.
@@ -117,6 +112,11 @@ class DhonResponse
      * @var string
      */
     public $column;
+
+    /**
+     * Initialize model.
+     */
+    public $model;
 
     /**
      * Set column name for id.
@@ -141,7 +141,6 @@ class DhonResponse
 
     public function __construct()
     {
-        $this->request  = service('request');
         $this->response = service('response');
         $this->response->setHeader('Content-type', 'application/json');
 
@@ -149,8 +148,6 @@ class DhonResponse
         $this->response->setHeader('Access-Control-Allow-Origin', '*');
 
         $this->response->setStatusCode(Response::HTTP_OK);
-
-        $this->client   = \Config\Services::curlrequest();
     }
 
     /**
@@ -162,9 +159,11 @@ class DhonResponse
     {
         if ($this->basic_auth) $this->_basic_auth();
         else {
+            $this->request  = service('request');
+
             if ($this->api_user['level'] > 0) {
                 if ($this->method == 'GET') {
-                    $value      = $this->request->getGet($this->column);
+                    $value = $this->request->getGet($this->column);
 
                     if ($value) {
                         $result     = $this->model->where($this->column, $value)->first();
@@ -217,6 +216,8 @@ class DhonResponse
      */
     private function _basic_auth()
     {
+        $this->apiusersModel = new ApiusersModel();
+
         if (isset($_SERVER['PHP_AUTH_USER'])) {
             $this->api_user = $this->apiusersModel->where('username', $_SERVER['PHP_AUTH_USER'])->first();
             if ($this->api_user) {
@@ -258,21 +259,12 @@ class DhonResponse
     }
 
     /**
-     * Connect with CURL.
-     */
-    private function _curl(string $url)
-    {
-        return json_decode($this->client->get($url)->getJSON());
-    }
-
-    /**
      * Get Hit for API requester.
      *
      * @return void
      */
     private function _hit()
     {
-        $this->apiusersModel    = new ApiusersModel();
         $this->apiaddressModel  = new ApiaddressModel();
         $this->apientityModel   = new ApientityModel();
         $this->apisessionModel  = new ApisessionModel();
@@ -302,10 +294,12 @@ class DhonResponse
             }
         }
 
+        $this->dhonrequest = new DhonRequest;
+
         $address    = $this->apiaddressModel->where('ip_address', $ip_address)->first();
         $id_address = empty($address) ? $this->apiaddressModel->insert([
             'ip_address'    => $ip_address,
-            'ip_info'       => $this->_curl("http://ip-api.com/json/{$ip_address}")
+            'ip_info'       => $this->dhonrequest->curl("http://ip-api.com/json/{$ip_address}")
         ]) : $address['id_address'];
 
         // api_entity
