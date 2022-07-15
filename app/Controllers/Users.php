@@ -2,16 +2,17 @@
 
 namespace App\Controllers;
 
-use App\Libraries\DhonResponse;
 use App\Models\UsersModel;
+use CodeIgniter\HTTP\RequestInterface;
+use CodeIgniter\HTTP\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class Users extends BaseController
 {
-    protected $dhonresponse;
-
-    public function __construct()
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
-        $this->dhonresponse = new DhonResponse;
+        parent::initController($request, $response, $logger);
+
         $this->dhonresponse->model = new UsersModel();
     }
 

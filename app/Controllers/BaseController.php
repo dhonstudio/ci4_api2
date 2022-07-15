@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\DhonResponse;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -37,6 +38,12 @@ abstract class BaseController extends Controller
      */
     protected $helpers = [];
 
+    protected $dhonresponse;
+
+    protected $cache;
+    protected $cache_name;
+    protected $cache_value;
+
     /**
      * Constructor.
      */
@@ -48,5 +55,26 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = \Config\Services::session();
+
+        $this->dhonresponse = new DhonResponse;
+
+        //~ cache
+        if ($_GET) {
+            $get_join = [];
+            foreach ($_GET as $key => $value) {
+                array_push($get_join, $key . '=' . $value);
+            }
+            $get = '?' . implode('&', $get_join);
+        } else {
+            $get = '';
+        }
+        $endpoint = urlencode(uri_string() . $get);
+
+        $this->cache        = $this->dhonresponse->cache        = \Config\Services::cache();
+        $this->cache_name   = $this->dhonresponse->cache_name   = $endpoint;
+        $cache_value        = $this->cache->get($this->cache_name);
+        if ($cache_value) {
+            $this->cache_value = $this->dhonresponse->cache_value = $cache_value;
+        }
     }
 }

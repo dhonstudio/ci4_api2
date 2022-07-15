@@ -174,69 +174,123 @@ class DhonResponse
     {
         if ($this->basic_auth) $this->_basic_auth();
 
-        $this->request  = service('request');
+        if (!$this->cache_value) {
+            $this->request  = service('request');
 
-        if ($this->api_user['level'] > 0) {
-            if ($this->method == 'GET') {
-                $value = $this->request->getGet($this->column);
+            if ($this->api_user['level'] > 0) {
+                if ($this->method == 'GET') {
+                    $value = $this->request->getGet($this->column);
 
-                if ($value) {
-                    $result     = $this->model->where($this->column, $value)->first();
+                    if ($value) {
+                        $result = $this->model->where($this->column, $value)->first();
 
-                    $this->data = $result == [] ? "Array()" : $result;
-                } else {
-                    $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
-                    $this->message = 'Require some variable to get';
-                }
-            } else if ($this->method == 'POST') {
-                if ($this->api_user['level'] > 1) {
-                    $data = [];
-                    foreach ($this->model->allowedFields as $field) {
-                        if ($field == 'password_hash') {
-                            if ($this->request->getPost($field)) {
-                                $data[$field] = password_hash($this->request->getPost($field), PASSWORD_DEFAULT);
+                        $this->data = $result == [] ? "Array()" : $result;
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                        $this->message = 'Require some variable to get';
+                    }
+                } else if ($this->method == 'GETALL') {
+                    $value = $this->request->getGet($this->column);
+
+                    if ($value) {
+                        $result = $this->model->where($this->column, $value)->findAll();
+
+                        $this->total = count($result) == 0 ? [0] : count($result);
+                        $this->data = $result == [] ? "Array()" : $result;
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                        $this->message = 'Require some variable to get';
+                    }
+                } else if ($this->method == 'POST') {
+                    if ($this->api_user['level'] > 1) {
+                        $data = [];
+                        foreach ($this->model->allowedFields as $field) {
+                            if ($field == 'password_hash') {
+                                if ($this->request->getPost($field)) {
+                                    $data[$field] = password_hash($this->request->getPost($field), PASSWORD_DEFAULT);
+                                } else {
+                                    $data[$field] = $this->request->getPost($field);
+                                }
                             } else {
                                 $data[$field] = $this->request->getPost($field);
                             }
+                        }
+
+                        $insert_id  = $this->model->insert($data);
+                        $result     = $this->model->where($this->id, $insert_id)->first();
+
+                        if ($result) {
+                            $this->data = $result;
                         } else {
+                            $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                            $this->message = 'Require some filed to post';
+                        }
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+                        $this->message = 'Only GET allowed';
+                    }
+                } else if ($this->method == 'PUT') {
+                    if ($this->api_user['level'] > 2) {
+                        $data = [];
+                        foreach ($this->model->allowedFields as $field) {
                             $data[$field] = $this->request->getPost($field);
                         }
-                    }
 
-                    $insert_id  = $this->model->insert($data);
-                    $result     = $this->model->where($this->id, $insert_id)->first();
+                        $edit_id    = $this->request->getPost($this->model->primaryKey);
+                        $this->model->update($edit_id, $data);
+                        $result     = $this->model->where($this->model->primaryKey, $edit_id)->first();
 
-                    if ($result) {
-                        $this->data = $result;
+                        if ($result) {
+                            $this->data = $result;
+                        } else {
+                            $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                            $this->message = 'Require some filed to post';
+                        }
                     } else {
-                        $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
-                        $this->message = 'Require some filed to post';
+                        $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+                        $this->message = 'Only GET and POST allowed';
+                    }
+                } else if ($this->method == 'DELETE') {
+                    if ($this->api_user['level'] > 3) {
+                        $result = $this->model->where($this->model->primaryKey, $this->request->getGet('id'))->first();
+
+                        if ($result) {
+                            $this->model->delete($this->request->getGet('id'));
+
+                            $db = \Config\Database::connect($this->model->DBGroup);
+                            $db->query("ALTER TABLE {$this->model->table} AUTO_INCREMENT = 1");
+
+                            $this->data = $result;
+                        } else {
+                            $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                            $this->message = 'ID not found';
+                        }
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+                        $this->message = 'Only GET, POST, and PUT allowed';
+                    }
+                } else if ($this->method == 'PASSWORD_VERIFY') {
+                    $username   = $this->request->getGet($this->username);
+                    $password   = $this->request->getGet($this->password);
+
+                    $user       = $this->model->where($this->username, $username)->first();
+
+                    if ($user) {
+                        $this->data = password_verify($password, $user[$this->password]) ? [true] : [false];
+                    } else {
+                        $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
+                        $this->message = 'Username not found';
                     }
                 } else {
-                    $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
-                    $this->message = 'Only GET allowed';
-                }
-            } else if ($this->method == 'PASSWORD_VERIFY') {
-                $username   = $this->request->getGet($this->username);
-                $password   = $this->request->getGet($this->password);
+                    $result         = $this->model->findAll();
 
-                $user       = $this->model->where($this->username, $username)->first();
-
-                if ($user) {
-                    $this->data = password_verify($password, $user[$this->password]) ? [true] : [false];
-                } else {
-                    $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
-                    $this->message = 'Username not found';
+                    $this->total    = count($result) == 0 ? [0] : count($result);
+                    $this->data     = $result == [] ? "Array()" : $result;
                 }
             } else {
-                $result         = $this->model->findAll();
-
-                $this->total    = count($result) == 0 ? [0] : count($result);
-                $this->data     = $result == [] ? "Array()" : $result;
+                $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+                $this->message = 'Authorization issue';
             }
-        } else {
-            $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
-            $this->message = 'Authorization issue';
         }
 
         $this->_send();
@@ -297,7 +351,15 @@ class DhonResponse
                 : ($this->data === "Array()" ? [] : $this->data)))
             : false;
 
-        $this->response->setBody(json_encode($this->result, JSON_NUMERIC_CHECK));
+        if ($this->cache_value) {
+            $for_cache = $this->cache_value;
+        } else {
+            $for_cache = json_encode($this->result, JSON_NUMERIC_CHECK);
+            if ($this->cache_crud == 0)
+                $this->cache->save($this->cache_name, $for_cache, 24 * 60 * 60);
+        }
+
+        $this->response->setBody($for_cache);
 
         if (isset($_SERVER['HTTP_USER_AGENT'])) $this->_hit();
 
