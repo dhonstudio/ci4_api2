@@ -35,11 +35,10 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
-$routes->get('/(:segment)/(:num)', 'Home::test/$1/$2');
-$routes->get('/userci/getAllUsers', 'UserCi::getAllUsers');
-$routes->get('/userci/getUserByEmail', 'UserCi::getUserByEmail');
-$routes->get('/userci/passwordVerify', 'UserCi::passwordVerify');
+$routes->get('/users/getAllUsers', 'Users::getAllUsers');
+$routes->get('/users/getUserByEmail', 'Users::getUserByEmail');
+$routes->post('/users/insert', 'Users::insert');
+$routes->get('/users/passwordVerify', 'Users::passwordVerify');
 
 $routes->post('/gethit', 'GetHit::index');
 

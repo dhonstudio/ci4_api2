@@ -21,7 +21,7 @@ class DhonResponse
      * 
      * @var boolean
      */
-    protected $basic_auth = false;
+    protected $basic_auth = true;
 
     /**
      * Initialize api_users.
@@ -57,7 +57,14 @@ class DhonResponse
      * 
      * @var mixed
      */
-    protected $data;
+    public $data;
+
+    /**
+     * Wrap result with status and response.
+     * 
+     * @var mixed
+     */
+    protected $result;
 
     /**
      * Connect to api_users model.
@@ -139,6 +146,14 @@ class DhonResponse
      */
     public $password;
 
+    /**
+     * For cache.
+     */
+    public $cache;
+    public $cache_name;
+    public $cache_value;
+    public $cache_crud = 0;
+
     public function __construct()
     {
         $this->response = service('response');
@@ -158,25 +173,34 @@ class DhonResponse
     public function collect()
     {
         if ($this->basic_auth) $this->_basic_auth();
-        else {
-            $this->request  = service('request');
 
-            if ($this->api_user['level'] > 0) {
-                if ($this->method == 'GET') {
-                    $value = $this->request->getGet($this->column);
+        $this->request  = service('request');
 
-                    if ($value) {
-                        $result     = $this->model->where($this->column, $value)->first();
+        if ($this->api_user['level'] > 0) {
+            if ($this->method == 'GET') {
+                $value = $this->request->getGet($this->column);
 
-                        $this->data = $result == [] ? ["Array()"] : $result;
-                    } else {
-                        $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
-                        $this->message = 'Require some variable to get';
-                    }
-                } else if ($this->method == 'POST') {
+                if ($value) {
+                    $result     = $this->model->where($this->column, $value)->first();
+
+                    $this->data = $result == [] ? "Array()" : $result;
+                } else {
+                    $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                    $this->message = 'Require some variable to get';
+                }
+            } else if ($this->method == 'POST') {
+                if ($this->api_user['level'] > 1) {
                     $data = [];
                     foreach ($this->model->allowedFields as $field) {
-                        $data[$field] = $this->request->getPost($field);
+                        if ($field == 'password_hash') {
+                            if ($this->request->getPost($field)) {
+                                $data[$field] = password_hash($this->request->getPost($field), PASSWORD_DEFAULT);
+                            } else {
+                                $data[$field] = $this->request->getPost($field);
+                            }
+                        } else {
+                            $data[$field] = $this->request->getPost($field);
+                        }
                     }
 
                     $insert_id  = $this->model->insert($data);
@@ -188,25 +212,34 @@ class DhonResponse
                         $this->response->setStatusCode(Response::HTTP_BAD_REQUEST);
                         $this->message = 'Require some filed to post';
                     }
-                } else if ($this->method == 'PASSWORD_VERIFY') {
-                    $username   = $this->request->getGet($this->username);
-                    $password   = $this->request->getGet($this->password);
-
-                    $user       = $this->model->where($this->username, $username)->first();
-                    $this->data = password_verify($password, $user[$this->password]) ? true : [false];
                 } else {
-                    $result         = $this->model->findAll();
+                    $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+                    $this->message = 'Only GET allowed';
+                }
+            } else if ($this->method == 'PASSWORD_VERIFY') {
+                $username   = $this->request->getGet($this->username);
+                $password   = $this->request->getGet($this->password);
 
-                    $this->total    = count($result) == 0 ? [0] : count($result);
-                    $this->data     = $result == [] ? ["Array()"] : $result;
+                $user       = $this->model->where($this->username, $username)->first();
+
+                if ($user) {
+                    $this->data = password_verify($password, $user[$this->password]) ? [true] : [false];
+                } else {
+                    $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
+                    $this->message = 'Username not found';
                 }
             } else {
-                $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
-                $this->message = 'Authorization issue';
-            }
+                $result         = $this->model->findAll();
 
-            $this->_send();
+                $this->total    = count($result) == 0 ? [0] : count($result);
+                $this->data     = $result == [] ? "Array()" : $result;
+            }
+        } else {
+            $this->response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+            $this->message = 'Authorization issue';
         }
+
+        $this->_send();
     }
 
     /**
@@ -244,18 +277,32 @@ class DhonResponse
      */
     private function _send()
     {
-        $result['status']   = $this->response->getStatusCode();
-        $result['response'] = $this->response->getReasonPhrase();
-        $this->message ? $result['message'] = $this->message : false;
-        $this->total ? ($result['total'] = $this->total == [0] ? 0 : $this->total) : false;
-        $this->data ? ($this->data === [false] ? $result['data'] = false
-            : ($result['data'] = $this->data == ["Array()"] ? [] : $this->data))
+        $this->result['status']   = $this->response->getStatusCode();
+        $this->result['response'] = $this->response->getReasonPhrase();
+        $this->message ? $this->result['message'] = $this->message : false;
+        $this->total ? ($this->result['total'] = $this->total == [0] ? 0 : $this->total) : false;
+
+        $this->send();
+    }
+
+    /**
+     * Send final response (public).
+     *
+     * @return void
+     */
+    public function send()
+    {
+        $this->data ? ($this->result['data'] = $this->data === [false] ? false
+            : ($this->data === [true] ? true
+                : ($this->data === "Array()" ? [] : $this->data)))
             : false;
 
-        $this->response->setBody(json_encode($result, JSON_NUMERIC_CHECK));
+        $this->response->setBody(json_encode($this->result, JSON_NUMERIC_CHECK));
 
         if (isset($_SERVER['HTTP_USER_AGENT'])) $this->_hit();
+
         $this->response->send();
+        exit;
     }
 
     /**

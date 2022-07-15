@@ -93,9 +93,8 @@ class Database extends Config
         $this->default['username'] = 'root';
         $this->project = $this->default;
 
-        $this->project['database'] = 'u493229753_project_dev';
-
-        ENVIRONMENT === 'testing' ? require 'DatabaseDev.php'
-            : (ENVIRONMENT === 'production' ? require 'DatabaseProd.php' : false);
+        ENVIRONMENT === 'development' ? require 'DatabaseLocal.php'
+            : (ENVIRONMENT === 'testing' ? require 'DatabaseDev.php'
+                : (ENVIRONMENT === 'production' ? require 'DatabaseProd.php' : false));
     }
 }

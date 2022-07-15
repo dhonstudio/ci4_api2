@@ -3,16 +3,16 @@
 namespace App\Controllers;
 
 use App\Libraries\DhonResponse;
-use App\Models\UserciModel;
+use App\Models\UsersModel;
 
-class UserCi extends BaseController
+class Users extends BaseController
 {
     protected $dhonresponse;
 
     public function __construct()
     {
         $this->dhonresponse = new DhonResponse;
-        $this->dhonresponse->model = new UserciModel();
+        $this->dhonresponse->model = new UsersModel();
     }
 
     public function getAllUsers()
@@ -24,6 +24,13 @@ class UserCi extends BaseController
     {
         $this->dhonresponse->method = 'GET';
         $this->dhonresponse->column = 'email';
+        $this->dhonresponse->collect();
+    }
+
+    public function insert()
+    {
+        $this->dhonresponse->method = 'POST';
+        $this->dhonresponse->id     = 'id_user';
         $this->dhonresponse->collect();
     }
 
