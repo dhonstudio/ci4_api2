@@ -21,7 +21,7 @@ class DhonResponse
      * 
      * @var boolean
      */
-    protected $basic_auth = true;
+    public $basic_auth = true;
 
     /**
      * Initialize api_users.
@@ -351,11 +351,11 @@ class DhonResponse
                 : ($this->data === "Array()" ? [] : $this->data)))
             : false;
 
-        if ($this->cache_value) {
+        if ($this->cache_value && $this->result['status'] == 200) {
             $for_cache = $this->cache_value;
         } else {
             $for_cache = json_encode($this->result, JSON_NUMERIC_CHECK);
-            if ($this->cache_crud == 0)
+            if ($this->cache_crud == 0 && $this->result['status'] == 200)
                 $this->cache->save($this->cache_name, $for_cache, 24 * 60 * 60);
         }
 

@@ -18,6 +18,7 @@ class Users extends BaseController
 
     public function getAllUsers()
     {
+        $this->dhonresponse->basic_auth = false;
         $this->dhonresponse->collect();
     }
 
