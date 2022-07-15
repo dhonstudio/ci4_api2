@@ -57,7 +57,14 @@ class DhonResponse
      * 
      * @var mixed
      */
-    protected $data;
+    public $data;
+
+    /**
+     * Wrap result with status and response.
+     * 
+     * @var mixed
+     */
+    protected $result;
 
     /**
      * Connect to api_users model.
@@ -138,6 +145,14 @@ class DhonResponse
      * @var string
      */
     public $password;
+
+    /**
+     * For cache.
+     */
+    public $cache;
+    public $cache_name;
+    public $cache_value;
+    public $cache_crud = 0;
 
     public function __construct()
     {
@@ -262,18 +277,30 @@ class DhonResponse
      */
     private function _send()
     {
-        $result['status']   = $this->response->getStatusCode();
-        $result['response'] = $this->response->getReasonPhrase();
-        $this->message ? $result['message'] = $this->message : false;
-        $this->total ? ($result['total'] = $this->total == [0] ? 0 : $this->total) : false;
-        $this->data ? ($result['data'] = $this->data === [false] ? false
-            : ($this->data == [true] ? true
-                : ($this->data == "Array()" ? [] : $this->data)))
+        $this->result['status']   = $this->response->getStatusCode();
+        $this->result['response'] = $this->response->getReasonPhrase();
+        $this->message ? $this->result['message'] = $this->message : false;
+        $this->total ? ($this->result['total'] = $this->total == [0] ? 0 : $this->total) : false;
+
+        $this->send();
+    }
+
+    /**
+     * Send final response (public).
+     *
+     * @return void
+     */
+    public function send()
+    {
+        $this->data ? ($this->result['data'] = $this->data === [false] ? false
+            : ($this->data === [true] ? true
+                : ($this->data === "Array()" ? [] : $this->data)))
             : false;
 
-        $this->response->setBody(json_encode($result, JSON_NUMERIC_CHECK));
+        $this->response->setBody(json_encode($this->result, JSON_NUMERIC_CHECK));
 
         if (isset($_SERVER['HTTP_USER_AGENT'])) $this->_hit();
+
         $this->response->send();
         exit;
     }
