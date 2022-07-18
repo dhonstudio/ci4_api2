@@ -331,8 +331,6 @@ class DhonResponse
      */
     private function _send()
     {
-        $this->result['status']   = $this->response->getStatusCode();
-        $this->result['response'] = $this->response->getReasonPhrase();
         $this->message ? $this->result['message'] = $this->message : false;
         $this->total ? ($this->result['total'] = $this->total == [0] ? 0 : $this->total) : false;
 
@@ -346,6 +344,9 @@ class DhonResponse
      */
     public function send()
     {
+        $this->result['status']   = $this->response->getStatusCode();
+        $this->result['response'] = $this->response->getReasonPhrase();
+
         $this->data ? ($this->result['data'] = $this->data === [false] ? false
             : ($this->data === [true] ? true
                 : ($this->data === "Array()" ? [] : $this->data)))
