@@ -40,6 +40,10 @@ $routes->get('/users/getUserByEmail', 'Users::getUserByEmail');
 $routes->post('/users/insert', 'Users::insert');
 $routes->get('/users/passwordVerify', 'Users::passwordVerify');
 
+$routes->post('/webadmin/insert', 'WebAdmin::insert');
+$routes->get('/webadmin/getUserByUsername', 'WebAdmin::getUserByUsername');
+$routes->get('/webadmin/getUserById', 'WebAdmin::getUserById');
+
 $routes->post('/gethit', 'GetHit::index');
 
 /*

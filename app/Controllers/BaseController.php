@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Libraries\DhonResponse;
+use Assets\Ci4_libraries\DhonResponse;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -38,6 +38,14 @@ abstract class BaseController extends Controller
      */
     protected $helpers = [];
 
+    /**
+     * git assets path
+     *
+     * @var string
+     */
+    protected $git_assets = ENVIRONMENT == 'development' ? '/../../../assets/'
+        : (ENVIRONMENT == 'testing' ? '/../../../../../assets/' : '/../../../../assets/');
+
     protected $dhonresponse;
 
     protected $cache;
@@ -56,6 +64,8 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
 
+        require __DIR__ . $this->git_assets . 'ci4_libraries/DhonRequest.php';
+        require __DIR__ . $this->git_assets . 'ci4_libraries/DhonResponse.php';
         $this->dhonresponse = new DhonResponse;
 
         //~ cache

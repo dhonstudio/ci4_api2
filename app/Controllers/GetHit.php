@@ -2,13 +2,16 @@
 
 namespace App\Controllers;
 
-use App\Libraries\DhonRequest;
+use Assets\Ci4_libraries\DhonRequest;
 use App\Models\AddressModel;
 use App\Models\EntityModel;
 use App\Models\HitModel;
 use App\Models\PageModel;
 use App\Models\SessionModel;
 use App\Models\SourceModel;
+use CodeIgniter\HTTP\RequestInterface;
+use CodeIgniter\HTTP\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class GetHit extends BaseController
 {
@@ -21,8 +24,10 @@ class GetHit extends BaseController
     protected $pageModel;
     protected $hitModel;
 
-    public function __construct()
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
+        parent::initController($request, $response, $logger);
+
         $this->dhonrequest  = new DhonRequest;
         $this->request      = service('request');
 
