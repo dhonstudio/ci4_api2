@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use Assets\Ci4_libraries\DhonRequest;
 use Assets\Ci4_libraries\DhonResponse;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
@@ -39,17 +40,52 @@ abstract class BaseController extends Controller
     protected $helpers = [];
 
     /**
-     * git assets path
+     * Git assets path.
      *
      * @var string
      */
-    protected $git_assets = ENVIRONMENT == 'development' ? '/../../../assets/'
-        : (ENVIRONMENT == 'testing' ? '/../../../../../assets/' : '/../../../../assets/');
+    protected $git_assets = '/../../../assets/';
 
+    /**
+     * Enabler cache.
+     *
+     * @var boolean
+     */
+    protected $cache_on = false;
+
+    /**
+     * Dhon Studio library for connect API.
+     * Run `git clone https://github.com/dhonstudio/ci4_libraries.git` in your git assets path.
+     *
+     * @var DhonRequest
+     */
+    protected $dhonrequest;
+
+    /**
+     * Dhon Studio library for send response.
+     * Run `git clone https://github.com/dhonstudio/ci4_libraries.git` in your git assets path.
+     *
+     * @var DhonResponse
+     */
     protected $dhonresponse;
 
+    /**
+     * Cache engine.
+     *
+     * @var \CodeIgniter\Cache\CacheInterface
+     */
     protected $cache;
+
+    /**
+     * Cache name.
+     *
+     * @var string
+     */
     protected $cache_name;
+
+    /**
+     * Cache value.
+     */
     protected $cache_value;
 
     /**
@@ -64,27 +100,51 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
 
-        require __DIR__ . $this->git_assets . 'ci4_libraries/DhonRequest.php';
-        require __DIR__ . $this->git_assets . 'ci4_libraries/DhonResponse.php';
-        $this->dhonresponse = new DhonResponse;
+        $this->_initLibraries([
+            'dhonrequest_version'   => "1.0.0",
+            'dhonresponse_version'  => "1.0.0",
+        ]);
 
-        //~ cache
-        if ($_GET) {
-            $get_join = [];
-            foreach ($_GET as $key => $value) {
-                array_push($get_join, $key . '=' . $value);
+        $this->_initCache();
+    }
+
+    /**
+     * Initialize additional libraries.
+     */
+    private function _initLibraries($params)
+    {
+        require __DIR__ . $this->git_assets . 'ci4_libraries/DhonRequest-' . $params['dhonrequest_version'] . '.php';
+        $this->dhonrequest = new DhonRequest([
+            'api_url'   => '',
+            'api_auth'  => [],
+        ]);
+
+        require __DIR__ . $this->git_assets . 'ci4_libraries/DhonResponse-' . $params['dhonresponse_version'] . '.php';
+        $this->dhonresponse = new DhonResponse();
+        $this->dhonresponse->dhonrequest = $this->dhonrequest;
+    }
+
+    private function _initCache()
+    {
+        if ($this->cache_on) {
+            if ($_GET) {
+                $get_join = [];
+                foreach ($_GET as $key => $value) {
+                    array_push($get_join, $key . '=' . $value);
+                }
+                $get = '?' . implode('&', $get_join);
+            } else {
+                $get = '';
             }
-            $get = '?' . implode('&', $get_join);
-        } else {
-            $get = '';
-        }
-        $endpoint = urlencode(uri_string() . $get);
+            $endpoint = urlencode(uri_string() . $get);
 
-        $this->cache        = $this->dhonresponse->cache        = \Config\Services::cache();
-        $this->cache_name   = $this->dhonresponse->cache_name   = $endpoint;
-        $cache_value        = $this->cache->get($this->cache_name);
-        if ($cache_value) {
-            $this->cache_value = $this->dhonresponse->cache_value = $cache_value;
+            $this->dhonresponse->cache_on   = $this->cache_on;
+            $this->dhonresponse->cache      = $this->cache      = \Config\Services::cache();
+            $this->dhonresponse->cache_name = $this->cache_name = $endpoint;
+            $cache_value        = $this->cache->get($this->cache_name);
+            if ($cache_value) {
+                $this->dhonresponse->cache_value = $this->cache_value = $cache_value;
+            }
         }
     }
 }

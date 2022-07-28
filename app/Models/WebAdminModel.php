@@ -9,6 +9,7 @@ class WebAdminModel extends Model
     protected $DBGroup = 'project';
     protected $table = 'web_admin';
     protected $useTimestamps = true;
+    protected $primaryKey = 'id_user';
     protected $allowedFields = ['username', 'fullName', 'password_hash', 'auth_key'];
     protected $validationRules = [
         'username' => 'required',

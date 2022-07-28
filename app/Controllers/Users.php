@@ -32,7 +32,6 @@ class Users extends BaseController
     public function insert()
     {
         $this->dhonresponse->method = 'POST';
-        $this->dhonresponse->id     = 'id_user';
         $this->dhonresponse->collect();
     }
 

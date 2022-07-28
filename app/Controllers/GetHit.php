@@ -28,9 +28,6 @@ class GetHit extends BaseController
     {
         parent::initController($request, $response, $logger);
 
-        $this->dhonrequest  = new DhonRequest;
-        $this->request      = service('request');
-
         $this->addressModel = new AddressModel();
         $this->entityModel  = new EntityModel();
         $this->sessionModel = new SessionModel();
