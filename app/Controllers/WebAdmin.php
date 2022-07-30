@@ -13,38 +13,37 @@ class WebAdmin extends BaseController
     {
         parent::initController($request, $response, $logger);
 
-        $this->dhonresponse->model = new WebAdminModel();
+        $this->dhonresponse->model      = new WebAdminModel();
 
-        $this->dhonresponse->basic_auth = false;
+        $this->dhonresponse->basic_auth = true;
+
+        $this->dhonresponse->effected   = [
+            'webadmin/getUserByUsernamed',
+        ];
     }
 
-    private function _crud_effect()
+    public function getUserByUsername()
     {
-        $effected = [
-            'webadmin/getUserByUsername',
-            'webadmin/getUserById',
-        ];
-
-        foreach ($effected as $key => $value) {
-            $this->cache->deleteMatching(urlencode($value) . '*');
-        }
+        $this->dhonresponse->method = 'GETALL';
+        $this->dhonresponse->column = 'username';
+        $this->dhonresponse->collect();
     }
 
     public function insert()
     {
         $this->dhonresponse->method = 'POST';
-        $this->dhonresponse->cache_crud = 1;
-        $this->dhonresponse->id     = 'id_user';
-
-        $this->_crud_effect();
-
         $this->dhonresponse->collect();
     }
 
-    public function getUserByUsername()
+    public function edit()
     {
-        $this->dhonresponse->method = 'GET';
-        $this->dhonresponse->column = 'username';
+        $this->dhonresponse->method = 'PUT';
+        $this->dhonresponse->collect();
+    }
+
+    public function delete()
+    {
+        $this->dhonresponse->method = 'DELETE';
         $this->dhonresponse->collect();
     }
 
@@ -60,8 +59,6 @@ class WebAdmin extends BaseController
         $this->dhonresponse->basic_auth = false;
         $this->dhonresponse->collect();
     }
-
-
 
     public function passwordVerify()
     {

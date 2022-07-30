@@ -54,6 +54,13 @@ abstract class BaseController extends Controller
     protected $cache_on = false;
 
     /**
+     * Enabler sqllite.
+     *
+     * @var boolean
+     */
+    protected $sqllite_on = true;
+
+    /**
      * Dhon Studio library for connect API.
      * Run `git clone https://github.com/dhonstudio/ci4_libraries.git` in your git assets path.
      *
@@ -89,6 +96,13 @@ abstract class BaseController extends Controller
     protected $cache_value;
 
     /**
+     * SQLLite from cache engine.
+     *
+     * @var \CodeIgniter\Cache\CacheInterface
+     */
+    protected $sqllite;
+
+    /**
      * Constructor.
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
@@ -106,6 +120,7 @@ abstract class BaseController extends Controller
         ]);
 
         $this->_initCache();
+        $this->_initSQLLite();
     }
 
     /**
@@ -124,6 +139,9 @@ abstract class BaseController extends Controller
         $this->dhonresponse->dhonrequest = $this->dhonrequest;
     }
 
+    /**
+     * Initialize cache if on.
+     */
     private function _initCache()
     {
         if ($this->cache_on) {
@@ -145,6 +163,17 @@ abstract class BaseController extends Controller
             if ($cache_value) {
                 $this->dhonresponse->cache_value = $this->cache_value = $cache_value;
             }
+        }
+    }
+
+    /**
+     * Initialize sqllite if on.
+     */
+    public function _initSQLLite()
+    {
+        if ($this->sqllite_on) {
+            $this->dhonresponse->sqllite_on = $this->sqllite_on;
+            $this->dhonresponse->sqllite    = $this->sqllite    = \Config\Services::cache();
         }
     }
 }

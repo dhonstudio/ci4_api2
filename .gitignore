@@ -6,6 +6,7 @@ system
 app/Config/DatabaseProd.php
 app/Config/DatabaseDev.php
 app/Config/DatabaseLocal.php
+writable/lite
 
 # OS X
 .DS_Store

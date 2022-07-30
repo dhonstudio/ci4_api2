@@ -10,6 +10,7 @@ class WebAdminModel extends Model
     protected $table = 'web_admin';
     protected $useTimestamps = true;
     protected $primaryKey = 'id_user';
+    protected $preventDuplicate = 'username';
     protected $allowedFields = ['username', 'fullName', 'password_hash', 'auth_key'];
     protected $validationRules = [
         'username' => 'required',
