@@ -15,28 +15,18 @@ class LandingPageContent extends BaseController
 
         $this->dhonresponse->model = new LandingPageContentModel();
 
-        $this->dhonresponse->basic_auth = false;
+        $this->dhonresponse->basic_auth = true;
     }
 
-    private function _crud_effect()
+    public function getAll()
     {
-        $effected = [
-            'landingpagecontent/',
-        ];
-
-        foreach ($effected as $key => $value) {
-            $this->cache->deleteMatching(urlencode($value) . '*');
-        }
+        $this->dhonresponse->sort = true;
+        $this->dhonresponse->collect();
     }
 
     public function insert()
     {
         $this->dhonresponse->method = 'POST';
-        $this->dhonresponse->cache_crud = 1;
-        $this->dhonresponse->id     = 'id_content';
-
-        $this->_crud_effect();
-
         $this->dhonresponse->collect();
     }
 }

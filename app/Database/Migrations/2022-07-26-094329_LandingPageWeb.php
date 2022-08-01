@@ -13,6 +13,9 @@ class LandingPageWeb extends Migration
                 'type'           => 'INT',
                 'auto_increment' => true,
             ],
+            'id_user' => [
+                'type'           => 'INT',
+            ],
             'webKey' => [
                 'type'          => 'VARCHAR',
                 'constraint'    => '32',
@@ -31,6 +34,8 @@ class LandingPageWeb extends Migration
             ],
         ]);
         $this->forge->addKey('id_web', true);
+        $this->forge->addKey('id_user');
+        $this->forge->addForeignKey('id_user', 'web_admin', 'id_user', 'CASCADE', 'CASCADE');
         $this->forge->createTable('landing_page_web');
     }
 

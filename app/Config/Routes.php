@@ -47,7 +47,10 @@ $routes->post('/webadmin/insert', 'WebAdmin::insert');
 $routes->get('/webadmin/getUserById', 'WebAdmin::getUserById');
 
 $routes->get('/landingpageweb/getAll', 'LandingPageWeb::getAll');
+$routes->get('/landingpageweb/getAllByUser', 'LandingPageWeb::getAllByUser');
 $routes->post('/landingpageweb/insert', 'LandingPageWeb::insert');
+
+$routes->get('/landingpagecontent/getAll', 'LandingPageContent::getAll');
 $routes->post('/landingpagecontent/insert', 'LandingPageContent::insert');
 
 $routes->post('/gethit', 'GetHit::index');

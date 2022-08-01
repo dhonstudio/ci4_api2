@@ -14,7 +14,6 @@ class LandingPageWeb extends BaseController
         parent::initController($request, $response, $logger);
 
         $this->dhonresponse->model = new LandingPageWebModel();
-        $this->landingPageWebModel = new LandingPageWebModel();
 
         $this->dhonresponse->basic_auth = true;
 
@@ -26,6 +25,14 @@ class LandingPageWeb extends BaseController
     public function getAll()
     {
         $this->dhonresponse->sort = true;
+        $this->dhonresponse->collect();
+    }
+
+    public function getAllByUser()
+    {
+        $this->dhonresponse->sort = true;
+        $this->dhonresponse->method = 'GETALL';
+        $this->dhonresponse->column = 'id_user';
         $this->dhonresponse->collect();
     }
 
