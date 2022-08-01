@@ -6,7 +6,7 @@
 # Root Features
 - [x] single system path (on Paths.php), so not use composer.json
 
-BaseController Features
+#BaseController Features
 - [x] single git_asset path from ci4_libraries
 - [x] cache enabler
 - [x] sqllite enabler
@@ -14,7 +14,7 @@ BaseController Features
 - [x] DhonResponse version config
 - [x] global basic auth
 
-In Controller Features
+#In Controller Features
 - [x] initController
 - [x] model in use
 - [x] per controller or per endpoint basic auth
