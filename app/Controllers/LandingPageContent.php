@@ -31,12 +31,6 @@ class LandingPageContent extends BaseController
         $this->dhonresponse->collect();
     }
 
-    public function insert()
-    {
-        $this->dhonresponse->method = 'POST';
-        $this->dhonresponse->collect();
-    }
-
     public function edit()
     {
         $this->dhonresponse->method = 'PUT';

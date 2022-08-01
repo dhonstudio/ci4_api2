@@ -58,7 +58,7 @@ abstract class BaseController extends Controller
      *
      * @var boolean
      */
-    protected $sqllite_on = true;
+    protected $sqllite_on = false;
 
     /**
      * Dhon Studio library for connect API.

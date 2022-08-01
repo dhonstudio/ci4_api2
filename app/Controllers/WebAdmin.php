@@ -29,24 +29,6 @@ class WebAdmin extends BaseController
         $this->dhonresponse->collect();
     }
 
-    public function insert()
-    {
-        $this->dhonresponse->method = 'POST';
-        $this->dhonresponse->collect();
-    }
-
-    public function edit()
-    {
-        $this->dhonresponse->method = 'PUT';
-        $this->dhonresponse->collect();
-    }
-
-    public function delete()
-    {
-        $this->dhonresponse->method = 'DELETE';
-        $this->dhonresponse->collect();
-    }
-
     public function getUserById()
     {
         $this->dhonresponse->method = 'GET';
@@ -54,16 +36,9 @@ class WebAdmin extends BaseController
         $this->dhonresponse->collect();
     }
 
-    public function getAllUsers()
+    public function insert()
     {
-        $this->dhonresponse->collect();
-    }
-
-    public function passwordVerify()
-    {
-        $this->dhonresponse->method     = 'PASSWORD_VERIFY';
-        $this->dhonresponse->username   = 'email';
-        $this->dhonresponse->password   = 'password_hash';
+        $this->dhonresponse->method = 'POST';
         $this->dhonresponse->collect();
     }
 }
