@@ -16,40 +16,22 @@ class LandingPageWeb extends BaseController
         $this->dhonresponse->model = new LandingPageWebModel();
         $this->landingPageWebModel = new LandingPageWebModel();
 
-        $this->dhonresponse->basic_auth = false;
-    }
+        $this->dhonresponse->basic_auth = true;
 
-    private function _crud_effect()
-    {
-        $effected = [
+        $this->dhonresponse->effected   = [
             'landingpageweb/getAll',
         ];
-
-        foreach ($effected as $key => $value) {
-            $this->cache->deleteMatching(urlencode($value) . '*');
-        }
     }
 
     public function getAll()
     {
-        if (!$this->cache_value) {
-            $data = $this->landingPageWebModel->orderBy('created_at', 'DESC')->findAll();
-            $this->total = count($data) == 0 ? [0] : count($data);
-            $this->dhonresponse->data = $data == [] ? "Array()" : $data;
-        }
-
-        $this->dhonresponse->send();
+        $this->dhonresponse->sort = true;
         $this->dhonresponse->collect();
     }
 
     public function insert()
     {
         $this->dhonresponse->method = 'POST';
-        $this->dhonresponse->cache_crud = 1;
-        $this->dhonresponse->id     = 'id_web';
-
-        $this->_crud_effect();
-
         $this->dhonresponse->collect();
     }
 }

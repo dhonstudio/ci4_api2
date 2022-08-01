@@ -42,8 +42,8 @@ $routes->get('/users/passwordVerify', 'Users::passwordVerify');
 
 $routes->get('/webadmin/getUserByUsername', 'WebAdmin::getUserByUsername');
 $routes->post('/webadmin/insert', 'WebAdmin::insert');
-$routes->post('/webadmin/edit', 'WebAdmin::edit');
-$routes->get('/webadmin/delete', 'WebAdmin::delete');
+// $routes->post('/webadmin/edit', 'WebAdmin::edit');
+// $routes->get('/webadmin/delete', 'WebAdmin::delete');
 $routes->get('/webadmin/getUserById', 'WebAdmin::getUserById');
 
 $routes->get('/landingpageweb/getAll', 'LandingPageWeb::getAll');
