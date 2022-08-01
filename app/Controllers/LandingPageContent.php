@@ -18,9 +18,11 @@ class LandingPageContent extends BaseController
         $this->dhonresponse->basic_auth = true;
     }
 
-    public function getAll()
+    public function getAllByKey()
     {
         $this->dhonresponse->sort = true;
+        $this->dhonresponse->method = 'GETALL';
+        $this->dhonresponse->column = 'webKey';
         $this->dhonresponse->collect();
     }
 

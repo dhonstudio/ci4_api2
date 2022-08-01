@@ -48,9 +48,11 @@ $routes->get('/webadmin/getUserById', 'WebAdmin::getUserById');
 
 $routes->get('/landingpageweb/getAll', 'LandingPageWeb::getAll');
 $routes->get('/landingpageweb/getAllByUser', 'LandingPageWeb::getAllByUser');
+$routes->get('/landingpageweb/getByKey', 'LandingPageWeb::getByKey');
 $routes->post('/landingpageweb/insert', 'LandingPageWeb::insert');
 
 $routes->get('/landingpagecontent/getAll', 'LandingPageContent::getAll');
+$routes->get('/landingpagecontent/getAllByKey', 'LandingPageContent::getAllByKey');
 $routes->post('/landingpagecontent/insert', 'LandingPageContent::insert');
 
 $routes->post('/gethit', 'GetHit::index');

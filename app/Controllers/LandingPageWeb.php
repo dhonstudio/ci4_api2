@@ -36,6 +36,13 @@ class LandingPageWeb extends BaseController
         $this->dhonresponse->collect();
     }
 
+    public function getByKey()
+    {
+        $this->dhonresponse->method = 'GET';
+        $this->dhonresponse->column = 'webKey';
+        $this->dhonresponse->collect();
+    }
+
     public function insert()
     {
         $this->dhonresponse->method = 'POST';
