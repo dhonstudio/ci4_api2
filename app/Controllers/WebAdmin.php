@@ -18,13 +18,13 @@ class WebAdmin extends BaseController
         $this->dhonresponse->basic_auth = true;
 
         $this->dhonresponse->effected   = [
-            'webadmin/getUserByUsernamed',
+            'webadmin/getUserByUsername',
         ];
     }
 
     public function getUserByUsername()
     {
-        $this->dhonresponse->method = 'GETALL';
+        $this->dhonresponse->method = 'GET';
         $this->dhonresponse->column = 'username';
         $this->dhonresponse->collect();
     }
