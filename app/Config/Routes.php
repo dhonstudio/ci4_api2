@@ -54,6 +54,7 @@ $routes->post('/landingpageweb/insert', 'LandingPageWeb::insert');
 $routes->get('/landingpagecontent/getAll', 'LandingPageContent::getAll');
 $routes->get('/landingpagecontent/getAllByKey', 'LandingPageContent::getAllByKey');
 $routes->post('/landingpagecontent/insert', 'LandingPageContent::insert');
+$routes->post('/landingpagecontent/edit', 'LandingPageContent::edit');
 
 $routes->post('/gethit', 'GetHit::index');
 
