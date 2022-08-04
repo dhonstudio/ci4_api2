@@ -41,6 +41,11 @@ $routes->get('/landingpagecontent/getAllByKey', 'LandingPageContent::getAllByKey
 $routes->get('/landingpagecontent/getAll', 'LandingPageContent::getAll');
 $routes->post('/landingpagecontent/edit', 'LandingPageContent::edit');
 
+$routes->get('/landingpagepage/getAllByKey', 'LandingPagePage::getAllByKey');
+$routes->get('/landingpagepage/getByKey', 'LandingPagePage::getByKey');
+$routes->get('/landingpagepage/getAll', 'LandingPagePage::getAll');
+
+$routes->get('/landingpageweb/getAll', 'LandingPageWeb::getAll');
 $routes->get('/landingpageweb/getAllByUser', 'LandingPageWeb::getAllByUser');
 $routes->get('/landingpageweb/getByKey', 'LandingPageWeb::getByKey');
 $routes->post('/landingpageweb/insert', 'LandingPageWeb::insert');

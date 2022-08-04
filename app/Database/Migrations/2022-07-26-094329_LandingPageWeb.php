@@ -35,6 +35,7 @@ class LandingPageWeb extends Migration
         ]);
         $this->forge->addKey('id_web', true);
         $this->forge->addKey('id_user');
+        $this->forge->addKey('webKey', false, true);
         $this->forge->addForeignKey('id_user', 'web_admin', 'id_user', 'CASCADE', 'CASCADE');
         $this->forge->createTable('landing_page_web');
     }

@@ -22,7 +22,7 @@ class LandingPageContent extends BaseController
     {
         $this->dhonresponse->sort = true;
         $this->dhonresponse->method = 'GETALL';
-        $this->dhonresponse->column = 'webKey';
+        $this->dhonresponse->column = 'pageKey';
         $this->dhonresponse->collect();
     }
 
