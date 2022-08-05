@@ -28,6 +28,16 @@ class LandingPageContent extends Migration
                 'constraint'    => '5000',
                 'null'          => true,
             ],
+            'contentType' => [
+                'type'          => 'VARCHAR',
+                'constraint'    => '10',
+                'null'          => true,
+            ],
+            'contentAccept' => [
+                'type'          => 'VARCHAR',
+                'constraint'    => '100',
+                'null'          => true,
+            ],
             'created_at' => [
                 'type'          => 'DATETIME',
             ],

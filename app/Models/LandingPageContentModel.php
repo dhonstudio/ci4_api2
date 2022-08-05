@@ -10,9 +10,9 @@ class LandingPageContentModel extends Model
     protected $table = 'landing_page_content';
     protected $useTimestamps = true;
     protected $primaryKey = 'id_content';
-    protected $allowedFields = ['webKey', 'contentName', 'contentValue'];
+    protected $allowedFields = ['pageKey', 'contentName', 'contentValue'];
     protected $validationRules = [
-        'webKey' => 'required',
+        'pageKey' => 'required',
         'contentName' => 'required',
         'contentValue' => 'required',
     ];
