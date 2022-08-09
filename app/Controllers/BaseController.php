@@ -44,7 +44,7 @@ abstract class BaseController extends Controller
      *
      * @var string
      */
-    protected $git_assets = '/../../../assets/';
+    protected $git_assets = '/../../../../../assets/';
 
     /**
      * Enabler cache.
