@@ -28,6 +28,7 @@ class LandingPageContent extends BaseController
 
     public function getAll()
     {
+        $this->dhonresponse->sort = true;
         $this->dhonresponse->collect();
     }
 
